@@ -88,6 +88,7 @@
                         data-email="<%= k.email %>"
                         data-rol="<%= k.rol %>"
                         data-grup="<%= k.grup ? k.grup._id : '' %>"
+                        data-organizasyon="<%= k.organizasyon ? k.organizasyon._id : '' %>"
                         data-aktif="<%= k.aktif %>">
                         <i class="bi bi-pencil"></i>
                       </button>
@@ -173,6 +174,15 @@
                   <% }) %>
                 </select>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Organizasyon</label>
+                <select name="organizasyon" class="form-select">
+                  <option value="">— Seçiniz —</option>
+                  <% organizasyonlar.forEach(o => { %>
+                    <option value="<%= o._id %>"><%= o.ad %></option>
+                  <% }) %>
+                </select>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -240,6 +250,15 @@
                 </select>
               </div>
               <div class="col-md-6">
+                <label class="form-label">Organizasyon</label>
+                <select name="organizasyon" id="g_organizasyon" class="form-select">
+                  <option value="">— Seçiniz —</option>
+                  <% organizasyonlar.forEach(o => { %>
+                    <option value="<%= o._id %>"><%= o.ad %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6">
                 <label class="form-label">Durum</label>
                 <div class="form-check mt-2">
                   <input type="checkbox" name="aktif" id="g_aktif" class="form-check-input">
@@ -279,6 +298,7 @@
       document.getElementById('g_email').value = btn.dataset.email;
       document.getElementById('g_rol').value = btn.dataset.rol;
       document.getElementById('g_grup').value = btn.dataset.grup;
+      document.getElementById('g_organizasyon').value = btn.dataset.organizasyon;
       document.getElementById('g_aktif').checked = btn.dataset.aktif === 'true';
       document.getElementById('guncelleForm').action = '/yonetim/kullanicilar/guncelle/' + btn.dataset.id;
     });

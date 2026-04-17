@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const agacVerisi = <%- JSON.stringify(agac) %>;
+
+      function agacRender(liste, derinlik) {
+        let html = '';
+        liste.forEach(o => {
+          const indent = derinlik * 20;
+          const hasCocuk = o.cocuklar && o.cocuklar.length > 0;
+          const collapseId = 'collapse_' + o._id;
+
+          html += `
+            <div class="d-flex align-items-center py-2 border-bottom" style="padding-left: ${indent + 8}px">
+              <span class="me-2 text-secondary">
+                ${hasCocuk
+                  ? `<button class="btn btn-sm btn-link p-0 text-secondary" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                      <i class="bi bi-caret-right-fill"></i>
+                     </button>`
+                  : '<i class="bi bi-dash text-muted"></i>'}
+              </span>
+              <i class="bi bi-building me-2 text-primary"></i>
+              <span class="me-2">${o.ad}</span>
+              ${o.tur ? `<span class="badge bg-light text-dark border me-2 small">${o.tur}</span>` : ''}
+              <span class="badge ${o.aktif ? 'bg-success' : 'bg-warning text-dark'} me-auto small">
+                ${o.aktif ? 'Aktif' : 'Pasif'}
+              </span>
+              <button class="btn btn-sm btn-outline-primary me-1"
+                data-bs-toggle="modal"
+                data-bs-target="#guncelleModal"
+                data-id="${o._id}"
+                data-ad="${o.ad}"
+                data-tur="${o.tur || ''}"
+                data-ust="${o.ust ? o.ust._id || o.ust : ''}"
+                data-aktif="${o.aktif}">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <form method="POST" action="/yonetim/organizasyon/sil/${o._id}" class="d-inline"
+                onsubmit="return confirm('Bu birimi silmek istediginize emin misiniz?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+            ${hasCocuk ? `<div class="collapse show" id="${collapseId}">${agacRender(o.cocuklar, derinlik + 1)}</div>` : ''}
+          `;
+        });
+        return html;
+      }
+
+      document.getElementById('agacKonteyner').innerHTML = agacRender(agacVerisi, 0) || '<p class="text-muted text-center py-4">Henüz birim eklenmemiş.</p>';
+
+      document.getElementById('guncelleModal').addEventListener('show.bs.modal', function(e) {
+        const btn = e.relatedTarget;
+        document.getElementById('g_ad').value = btn.dataset.ad;
+        document.getElementById('g_tur').value = btn.dataset.tur;
+        document.getElementById('g_ust').value = btn.dataset.ust;
+        document.getElementById('g_aktif').checked = btn.dataset.aktif === 'true';
+        document.getElementById('guncelleForm').action = '/yonetim/organizasyon/guncelle/' + btn.dataset.id;
+      });
+    });
+  </script>
+
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/navbar') %>
+
+  <div class="container-fluid flex-grow-1 py-3">
+    <div class="row g-3">
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sol-panel') %>
+      </div>
+
+      <div class="col-lg-8 col-md-6">
+
+        <% if (basari) { %>
+          <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>İşlem başarıyla tamamlandı.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+        <% if (hata) { %>
+          <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-circle me-2"></i>Bir hata oluştu.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-diagram-3 me-2"></i>Organizasyon Yönetimi</span>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ekleModal">
+              <i class="bi bi-plus-lg me-1"></i>Yeni Birim
+            </button>
+          </div>
+          <div class="card-body">
+            <div id="agacKonteyner">
+              <p class="text-muted text-center py-4">Yükleniyor...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sag-panel') %>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Yeni Birim Modal -->
+  <div class="modal fade" id="ekleModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-lg me-2"></i>Yeni Birim</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="/yonetim/organizasyon/ekle">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Birim Adı</label>
+              <input type="text" name="ad" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tür</label>
+              <input type="text" name="tur" class="form-control" placeholder="örn: İl Müdürlüğü, OBM">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Üst Birim</label>
+              <select name="ust" class="form-select">
+                <option value="">— Yok (Kök Birim) —</option>
+                <% organizasyonlar.forEach(o => { %>
+                  <option value="<%= o._id %>"><%= o.ad %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Güncelle Modal -->
+  <div class="modal fade" id="guncelleModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Birim Düzenle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" id="guncelleForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Birim Adı</label>
+              <input type="text" name="ad" id="g_ad" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tür</label>
+              <input type="text" name="tur" id="g_tur" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Üst Birim</label>
+              <select name="ust" id="g_ust" class="form-select">
+                <option value="">— Yok (Kök Birim) —</option>
+                <% organizasyonlar.forEach(o => { %>
+                  <option value="<%= o._id %>"><%= o.ad %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input type="checkbox" name="aktif" id="g_aktif" class="form-check-input">
+                <label class="form-check-label" for="g_aktif">Aktif</label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ 
+</body>
+</html>

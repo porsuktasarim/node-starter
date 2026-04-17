@@ -2,18 +2,21 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Group = require('../models/Group');
+const Organization = require('../models/Organization');
 const { girisGerekli, izinGerekli } = require('../middleware/auth');
 
 // Kullanıcı listesi
 router.get('/kullanicilar', girisGerekli, izinGerekli('yonetim.kullanicilar.goruntule'), async (req, res) => {
   try {
-    const kullanicilar = await User.find().populate('grup').sort({ createdAt: -1 });
+    const kullanicilar = await User.find().populate('grup').populate('organizasyon').sort({ createdAt: -1 });
     const gruplar = await Group.find({ aktif: true });
+    const organizasyonlar = await Organization.find({ aktif: true }).sort({ ad: 1 });
     res.render('yonetim/kullanicilar', {
       title: 'Kullanıcılar',
       kullanici: req.session.kullanici,
       kullanicilar,
       gruplar,
+      organizasyonlar,
       hata: null,
       basari: null
     });
@@ -26,8 +29,8 @@ router.get('/kullanicilar', girisGerekli, izinGerekli('yonetim.kullanicilar.goru
 // Kullanıcı ekle
 router.post('/kullanicilar/ekle', girisGerekli, izinGerekli('yonetim.kullanicilar.ekle'), async (req, res) => {
   try {
-    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup } = req.body;
-    const yeniKullanici = new User({ ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup });
+    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, organizasyon } = req.body;
+    const yeniKullanici = new User({ ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, organizasyon: organizasyon || null });
     await yeniKullanici.save();
     res.redirect('/yonetim/kullanicilar?basari=1');
   } catch (err) {
@@ -39,9 +42,10 @@ router.post('/kullanicilar/ekle', girisGerekli, izinGerekli('yonetim.kullanicila
 // Kullanıcı güncelle
 router.post('/kullanicilar/guncelle/:id', girisGerekli, izinGerekli('yonetim.kullanicilar.guncelle'), async (req, res) => {
   try {
-    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup, aktif } = req.body;
+    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup, organizasyon, aktif } = req.body;
     await User.findByIdAndUpdate(req.params.id, {
       ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup,
+      organizasyon: organizasyon || null,
       aktif: aktif === 'on'
     });
     res.redirect('/yonetim/kullanicilar?basari=1');
@@ -117,6 +121,73 @@ router.post('/gruplar/sil/:id', girisGerekli, izinGerekli('yonetim.gruplar.gunce
   } catch (err) {
     console.error(err);
     res.redirect('/yonetim/gruplar?hata=1');
+  }
+});
+
+// Organizasyon listesi
+router.get('/organizasyon', girisGerekli, izinGerekli('yonetim.organizasyon.goruntule'), async (req, res) => {
+  try {
+    const organizasyonlar = await Organization.find().populate('ust').sort({ ad: 1 });
+
+    // Ağaç yapısı oluştur
+    const agacYap = (liste, ustId = null) => {
+      return liste
+        .filter(o => String(o.ust ? o.ust._id : null) === String(ustId))
+        .map(o => ({ ...o.toObject(), cocuklar: agacYap(liste, o._id) }));
+    };
+    const agac = agacYap(organizasyonlar);
+
+    res.render('yonetim/organizasyon', {
+      title: 'Organizasyon',
+      kullanici: req.session.kullanici,
+      organizasyonlar,
+      agac,
+      hata: null,
+      basari: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
+// Organizasyon ekle
+router.post('/organizasyon/ekle', girisGerekli, izinGerekli('yonetim.organizasyon.guncelle'), async (req, res) => {
+  try {
+    const { ad, tur, ust } = req.body;
+    const yeni = new Organization({ ad, tur, ust: ust || null });
+    await yeni.save();
+    res.redirect('/yonetim/organizasyon?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/organizasyon?hata=1');
+  }
+});
+
+// Organizasyon güncelle
+router.post('/organizasyon/guncelle/:id', girisGerekli, izinGerekli('yonetim.organizasyon.guncelle'), async (req, res) => {
+  try {
+    const { ad, tur, ust, aktif } = req.body;
+    await Organization.findByIdAndUpdate(req.params.id, {
+      ad, tur,
+      ust: ust || null,
+      aktif: aktif === 'on'
+    });
+    res.redirect('/yonetim/organizasyon?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/organizasyon?hata=1');
+  }
+});
+
+// Organizasyon sil
+router.post('/organizasyon/sil/:id', girisGerekli, izinGerekli('yonetim.organizasyon.guncelle'), async (req, res) => {
+  try {
+    await Organization.findByIdAndDelete(req.params.id);
+    res.redirect('/yonetim/organizasyon?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/organizasyon?hata=1');
   }
 });
 

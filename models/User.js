@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema({
     ref: 'Group',
     default: null
   },
+  organizasyon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+    default: null
+  },
   aktif: {
     type: Boolean,
     default: true
