@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  akekos:
+    build: .
+    container_name: akekos
+    restart: unless-stopped
+    ports:
+      - "55154:55154"
+    environment:
+      - PORT=55154
+      - MONGO_URI=mongodb://akekos-mongo:27017/akekos
+    depends_on:
+      - akekos-mongo
+
+  akekos-mongo:
+    image: mongo:7
+    container_name: akekos-mongo
+    restart: unless-stopped
+    volumes:
+      - akekos_mongo_data:/data/db
+
+volumes:
+  akekos_mongo_data:

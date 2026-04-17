@@ -31,7 +31,7 @@ app.use(session({
   secret: 'gizli-anahtar-bunu-degistir',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27018/node-starter' }),
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27018/node-starter' }),
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
