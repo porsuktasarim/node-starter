@@ -62,4 +62,62 @@ router.post('/kullanicilar/sil/:id', girisGerekli, izinGerekli('yonetim.kullanic
   }
 });
 
+// Grup listesi
+router.get('/gruplar', girisGerekli, izinGerekli('yonetim.gruplar.goruntule'), async (req, res) => {
+  try {
+    const gruplar = await Group.find().sort({ kod: 1 });
+    const MODULLER = require('../config/moduller');
+    res.render('yonetim/gruplar', {
+      title: 'Gruplar',
+      kullanici: req.session.kullanici,
+      gruplar,
+      MODULLER,
+      hata: null,
+      basari: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
+// Grup güncelle
+router.post('/gruplar/guncelle/:id', girisGerekli, izinGerekli('yonetim.gruplar.guncelle'), async (req, res) => {
+  try {
+    const { ad, izinler } = req.body;
+    await Group.findByIdAndUpdate(req.params.id, {
+      ad,
+      izinler: izinler ? (Array.isArray(izinler) ? izinler : [izinler]) : []
+    });
+    res.redirect('/yonetim/gruplar?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/gruplar?hata=1');
+}
+});
+
+// Grup ekle
+router.post('/gruplar/ekle', girisGerekli, izinGerekli('yonetim.gruplar.ekle'), async (req, res) => {
+  try {
+    const { kod, ad } = req.body;
+    const yeniGrup = new Group({ kod, ad, izinler: [] });
+    await yeniGrup.save();
+    res.redirect('/yonetim/gruplar?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/gruplar?hata=1');
+  }
+});
+
+// Grup sil
+router.post('/gruplar/sil/:id', girisGerekli, izinGerekli('yonetim.gruplar.guncelle'), async (req, res) => {
+  try {
+    await Group.findByIdAndDelete(req.params.id);
+    res.redirect('/yonetim/gruplar?basari=1');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/gruplar?hata=1');
+  }
+});
+
 module.exports = router;

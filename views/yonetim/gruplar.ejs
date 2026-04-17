@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/navbar') %>
+
+  <div class="container-fluid flex-grow-1 py-3">
+    <div class="row g-3">
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sol-panel') %>
+      </div>
+
+      <div class="col-lg-8 col-md-6">
+
+        <% if (basari) { %>
+          <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>İşlem başarıyla tamamlandı.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+        <% if (hata) { %>
+          <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-circle me-2"></i>Bir hata oluştu.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% } %>
+
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-shield-lock me-2"></i>Grup Yönetimi</span>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ekleModal">
+              <i class="bi bi-plus-lg me-1"></i>Yeni Grup
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Kod</th>
+                  <th>Ad</th>
+                  <th>İzin Sayısı</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% gruplar.forEach(g => { %>
+                <tr>
+                  <td><code><%= g.kod %></code></td>
+                  <td><%= g.ad %></td>
+                  <td><span class="badge bg-primary"><%= g.izinler.length %></span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#guncelleModal"
+                      data-id="<%= g._id %>"
+                      data-ad="<%= g.ad %>"
+                      data-izinler="<%= g.izinler.join(',') %>">
+                      <i class="bi bi-pencil"></i> Düzenle
+                    </button>
+                    <form method="POST" action="/yonetim/gruplar/sil/<%= g._id %>" class="d-inline"
+                      onsubmit="return confirm('Bu grubu silmek istediğinize emin misiniz?')">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sag-panel') %>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Yeni Grup Modal -->
+  <div class="modal fade" id="ekleModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-lg me-2"></i>Yeni Grup</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="/yonetim/gruplar/ekle">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Grup Kodu</label>
+              <input type="text" name="kod" class="form-control" placeholder="ornek: muhasebe" required>
+              <div class="form-text">Küçük harf, boşluksuz, benzersiz olmalı.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Grup Adı</label>
+              <input type="text" name="ad" class="form-control" placeholder="ornek: Muhasebe Ekibi" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Güncelle Modal -->
+  <div class="modal fade" id="guncelleModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Grup Düzenle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" id="guncelleForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Grup Adı</label>
+              <input type="text" name="ad" id="g_ad" class="form-control" required>
+            </div>
+            <hr>
+            <p class="fw-bold mb-3">Modül İzinleri</p>
+            <% MODULLER.forEach(modul => { %>
+              <div class="card mb-3">
+                <div class="card-header bg-secondary text-white small fw-bold">
+                  <%= modul.ad %>
+                </div>
+                <div class="card-body">
+                  <div class="row g-2">
+                    <% modul.izinler.forEach(izin => { %>
+                      <div class="col-md-4">
+                        <div class="form-check">
+                          <input type="checkbox"
+                            name="izinler"
+                            value="<%= izin.kod %>"
+                            id="izin_<%= izin.kod.replace(/\./g, '_') %>"
+                            class="form-check-input izin-checkbox">
+                          <label class="form-check-label small" for="izin_<%= izin.kod.replace(/\./g, '_') %>">
+                            <%= izin.ad %>
+                          </label>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    document.getElementById('guncelleModal').addEventListener('show.bs.modal', function(e) {
+      const btn = e.relatedTarget;
+      document.getElementById('g_ad').value = btn.dataset.ad;
+      document.getElementById('guncelleForm').action = '/yonetim/gruplar/guncelle/' + btn.dataset.id;
+
+      // Tüm checkboxları temizle
+      document.querySelectorAll('.izin-checkbox').forEach(cb => cb.checked = false);
+
+      // Mevcut izinleri işaretle
+      const izinler = btn.dataset.izinler ? btn.dataset.izinler.split(',') : [];
+      izinler.forEach(izin => {
+        const cb = document.getElementById('izin_' + izin.replace(/\./g, '_'));
+        if (cb) cb.checked = true;
+      });
+    });
+  </script>
+</body>
+</html>
