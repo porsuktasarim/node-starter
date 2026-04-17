@@ -40,7 +40,7 @@ mongoose.connect(MONGO_URI).then(async () => {
     unvan: 'Sistem Yöneticisi',
     gorevYeri: 'Merkez',
     email: 'admin@example.com',
-    sifre: 'Admin1234',
+    sifre: 'admin',
     rol: 'admin',
     grup: adminGrubu._id
   });
