@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Group = require('./models/Group');
 
-const MONGO_URI = 'mongodb://localhost:27018/node-starter';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27018/node-starter';
 
 mongoose.connect(MONGO_URI).then(async () => {
   console.log('MongoDB bağlandı');
