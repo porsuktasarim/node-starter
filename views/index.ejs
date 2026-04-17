@@ -7,14 +7,33 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container mt-5">
-    <div class="jumbotron">
-      <h1 class="display-4">Merhaba! 👋</h1>
-      <p class="lead">Node.js + Express + MongoDB + Bootstrap çalışıyor.</p>
-      <hr class="my-4">
-      <p>İlk adım tamam. Şimdi inşa etmeye başlayabiliriz.</p>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Node Starter</a>
+      <div class="ms-auto">
+        <span class="text-white me-3">
+          <%= kullanici.ad %> <%= kullanici.soyad %>
+        </span>
+        <a href="/cikis" class="btn btn-outline-light btn-sm">Cikis</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Hos geldin, <%= kullanici.ad %>!</h5>
+        <p class="card-text">
+          <strong>Kullanici Adi:</strong> <%= kullanici.kullaniciAdi %><br>
+          <strong>Sicil No:</strong> <%= kullanici.sicilNo %><br>
+          <strong>Unvan:</strong> <%= kullanici.unvan %><br>
+          <strong>Gorev Yeri:</strong> <%= kullanici.gorevYeri %><br>
+          <strong>Rol:</strong> <%= kullanici.rol %>
+        </p>
+      </div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

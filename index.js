@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
 const path = require('path');
+
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 55154;
@@ -22,9 +26,22 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB bağlandı'))
   .catch(err => console.error('MongoDB bağlantı hatası:', err));
 
+// Session
+app.use(session({
+  secret: 'gizli-anahtar-bunu-degistir',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27018/node-starter' }),
+  cookie: { maxAge: 1000 * 60 * 60 * 24 }
+}));
+
+// Rotalar
+app.use('/', authRoutes);
+
 // Ana sayfa
 app.get('/', (req, res) => {
-  res.render('index', { title: 'Node Starter' });
+  if (!req.session.kullanici) return res.redirect('/giris');
+  res.render('index', { title: 'Ana Sayfa', kullanici: req.session.kullanici });
 });
 
 app.listen(PORT, () => {
