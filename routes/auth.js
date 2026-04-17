@@ -30,7 +30,8 @@ router.post('/giris', async (req, res) => {
       unvan: kullanici.unvan,
       gorevYeri: kullanici.gorevYeri,
       email: kullanici.email,
-      rol: kullanici.rol
+      rol: kullanici.rol,
+      grupId: kullanici.grup
     };
 
     res.redirect('/');

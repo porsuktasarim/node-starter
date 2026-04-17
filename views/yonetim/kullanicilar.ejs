@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/navbar') %>
+
+  <div class="container-fluid flex-grow-1 py-3">
+    <div class="row g-3">
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sol-panel') %>
+      </div>
+
+      <div class="col-lg-8 col-md-6">
+
+        <% if (hata || basari) { %>
+          <% if (basari) { %>
+            <div class="alert alert-success alert-dismissible fade show">
+              <i class="bi bi-check-circle me-2"></i>İşlem başarıyla tamamlandı.
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+          <% if (hata) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <i class="bi bi-exclamation-circle me-2"></i>Bir hata oluştu.
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% } %>
+        <% } %>
+
+        <div class="card shadow-sm mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-people me-2"></i>Kullanıcılar</span>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ekleModal">
+              <i class="bi bi-plus-lg me-1"></i>Yeni Kullanıcı
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Ad Soyad</th>
+                    <th>Kullanıcı Adı</th>
+                    <th>Sicil No</th>
+                    <th>Ünvan</th>
+                    <th>Görev Yeri</th>
+                    <th>Grup</th>
+                    <th>Rol</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% kullanicilar.forEach(k => { %>
+                  <tr>
+                    <td><%= k.ad %> <%= k.soyad %></td>
+                    <td><%= k.kullaniciAdi %></td>
+                    <td><%= k.sicilNo %></td>
+                    <td><%= k.unvan || '—' %></td>
+                    <td><%= k.gorevYeri || '—' %></td>
+                    <td><%= k.grup ? k.grup.ad : '—' %></td>
+                    <td>
+                      <span class="badge <%= k.rol === 'admin' ? 'bg-danger' : 'bg-secondary' %>">
+                        <%= k.rol %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge <%= k.aktif ? 'bg-success' : 'bg-warning text-dark' %>">
+                        <%= k.aktif ? 'Aktif' : 'Pasif' %>
+                      </span>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#guncelleModal"
+                        data-id="<%= k._id %>"
+                        data-ad="<%= k.ad %>"
+                        data-soyad="<%= k.soyad %>"
+                        data-kullaniciadi="<%= k.kullaniciAdi %>"
+                        data-sicilno="<%= k.sicilNo %>"
+                        data-unvan="<%= k.unvan %>"
+                        data-gorevyeri="<%= k.gorevYeri %>"
+                        data-email="<%= k.email %>"
+                        data-rol="<%= k.rol %>"
+                        data-grup="<%= k.grup ? k.grup._id : '' %>"
+                        data-aktif="<%= k.aktif %>">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <form method="POST" action="/yonetim/kullanicilar/sil/<%= k._id %>" class="d-inline"
+                        onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sag-panel') %>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Yeni Kullanıcı Modal -->
+  <div class="modal fade" id="ekleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Yeni Kullanıcı</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="/yonetim/kullanicilar/ekle">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Ad</label>
+                <input type="text" name="ad" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Soyad</label>
+                <input type="text" name="soyad" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="kullaniciAdi" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Sicil No</label>
+                <input type="text" name="sicilNo" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ünvan</label>
+                <input type="text" name="unvan" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Görev Yeri</label>
+                <input type="text" name="gorevYeri" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">E-posta</label>
+                <input type="email" name="email" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Şifre</label>
+                <input type="password" name="sifre" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Rol</label>
+                <select name="rol" class="form-select">
+                  <option value="kullanici">Kullanıcı</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Grup</label>
+                <select name="grup" class="form-select">
+                  <option value="">— Seçiniz —</option>
+                  <% gruplar.forEach(g => { %>
+                    <option value="<%= g._id %>"><%= g.ad %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Güncelle Modal -->
+  <div class="modal fade" id="guncelleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Kullanıcı Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" id="guncelleForm">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Ad</label>
+                <input type="text" name="ad" id="g_ad" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Soyad</label>
+                <input type="text" name="soyad" id="g_soyad" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="kullaniciAdi" id="g_kullaniciAdi" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Sicil No</label>
+                <input type="text" name="sicilNo" id="g_sicilNo" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ünvan</label>
+                <input type="text" name="unvan" id="g_unvan" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Görev Yeri</label>
+                <input type="text" name="gorevYeri" id="g_gorevYeri" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">E-posta</label>
+                <input type="email" name="email" id="g_email" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Rol</label>
+                <select name="rol" id="g_rol" class="form-select">
+                  <option value="kullanici">Kullanıcı</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Grup</label>
+                <select name="grup" id="g_grup" class="form-select">
+                  <option value="">— Seçiniz —</option>
+                  <% gruplar.forEach(g => { %>
+                    <option value="<%= g._id %>"><%= g.ad %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Durum</label>
+                <div class="form-check mt-2">
+                  <input type="checkbox" name="aktif" id="g_aktif" class="form-check-input">
+                  <label class="form-check-label" for="g_aktif">Aktif</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // URL parametrelerinden bildirim göster
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('basari')) {
+      document.querySelector('.alert-success')?.classList.remove('d-none');
+    }
+
+    // Güncelle modalını doldur
+    document.getElementById('guncelleModal').addEventListener('show.bs.modal', function(e) {
+      const btn = e.relatedTarget;
+      document.getElementById('g_ad').value = btn.dataset.ad;
+      document.getElementById('g_soyad').value = btn.dataset.soyad;
+      document.getElementById('g_kullaniciAdi').value = btn.dataset.kullaniciadi;
+      document.getElementById('g_sicilNo').value = btn.dataset.sicilno;
+      document.getElementById('g_unvan').value = btn.dataset.unvan;
+      document.getElementById('g_gorevYeri').value = btn.dataset.gorevyeri;
+      document.getElementById('g_email').value = btn.dataset.email;
+      document.getElementById('g_rol').value = btn.dataset.rol;
+      document.getElementById('g_grup').value = btn.dataset.grup;
+      document.getElementById('g_aktif').checked = btn.dataset.aktif === 'true';
+      document.getElementById('guncelleForm').action = '/yonetim/kullanicilar/guncelle/' + btn.dataset.id;
+    });
+  </script>
+</body>
+</html>

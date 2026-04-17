@@ -4,7 +4,7 @@ const session = require('express-session');
 const { MongoStore } = require('connect-mongo');
 const path = require('path');
 
-const authRoutes = require('./routes/auth');
+const yonetimRoutes = require('./routes/yonetim');
 
 const app = express();
 const PORT = process.env.PORT || 55154;
@@ -36,7 +36,7 @@ app.use(session({
 }));
 
 // Rotalar
-app.use('/', authRoutes);
+app.use('/yonetim', yonetimRoutes);
 
 // Ana sayfa
 app.get('/', (req, res) => {
