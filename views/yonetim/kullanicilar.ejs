@@ -59,7 +59,11 @@
                 <tbody>
                   <% kullanicilar.forEach(k => { %>
                   <tr>
-                    <td><%= k.ad %> <%= k.soyad %></td>
+                    <td>
+                      <a href="/yonetim/kullanicilar/<%= k.kullaniciAdi %>" class="text-decoration-none">
+                        <%= k.ad %> <%= k.soyad %>
+                      </a>
+                    </td>
                     <td><%= k.kullaniciAdi %></td>
                     <td><%= k.sicilNo %></td>
                     <td><%= k.unvan || '—' %></td>

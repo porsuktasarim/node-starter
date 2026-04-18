@@ -245,4 +245,25 @@ router.get('/gruplar/:id', girisGerekli, izinGerekli('yonetim.gruplar.goruntule'
   }
 });
 
+// Kullanıcı detay sayfası
+router.get('/kullanicilar/:kullaniciAdi', girisGerekli, izinGerekli('yonetim.kullanicilar.goruntule'), async (req, res) => {
+  try {
+    const k = await User.findOne({ kullaniciAdi: req.params.kullaniciAdi }).populate('grup').populate('organizasyon');
+    if (!k) return res.redirect('/yonetim/kullanicilar');
+
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const qr = await qrOlustur('kullanici', k._id, baseUrl);
+
+    res.render('yonetim/kullanici-detay', {
+      title: `${k.ad} ${k.soyad}`,
+      kullanici: req.session.kullanici,
+      k,
+      qr
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/kullanicilar');
+  }
+});
+
 module.exports = router;

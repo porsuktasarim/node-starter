@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/navbar') %>
+
+  <div class="container-fluid flex-grow-1 py-3">
+    <div class="row g-3">
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sol-panel') %>
+      </div>
+
+      <div class="col-lg-8 col-md-6">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/yonetim/kullanicilar">Kullanıcılar</a></li>
+            <li class="breadcrumb-item active"><%= k.ad %> <%= k.soyad %></li>
+          </ol>
+        </nav>
+
+        <div class="row g-3">
+
+          <!-- Sol: Kullanıcı Bilgileri -->
+          <div class="col-md-8">
+            <div class="card shadow-sm mb-3">
+              <div class="card-header fw-bold">
+                <i class="bi bi-person-circle me-2"></i><%= k.ad %> <%= k.soyad %>
+                <span class="badge <%= k.rol === 'admin' ? 'bg-danger' : 'bg-secondary' %> ms-2"><%= k.rol %></span>
+                <span class="badge <%= k.aktif ? 'bg-success' : 'bg-warning text-dark' %> ms-1">
+                  <%= k.aktif ? 'Aktif' : 'Pasif' %>
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row g-2 small">
+                  <div class="col-md-6">
+                    <strong>Kullanıcı Adı:</strong> <%= k.kullaniciAdi %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Sicil No:</strong> <%= k.sicilNo %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Ünvan:</strong> <%= k.unvan || '—' %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Görev Yeri:</strong> <%= k.gorevYeri || '—' %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>E-posta:</strong> <%= k.email %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Grup:</strong> 
+                    <% if (k.grup) { %>
+                      <a href="/yonetim/gruplar/<%= k.grup._id %>"><%= k.grup.ad %></a>
+                    <% } else { %>
+                      —
+                    <% } %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Organizasyon:</strong>
+                    <% if (k.organizasyon) { %>
+                      <a href="/yonetim/organizasyon/<%= k.organizasyon._id %>"><%= k.organizasyon.ad %></a>
+                    <% } else { %>
+                      —
+                    <% } %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Kayıt Tarihi:</strong> <%= new Date(k.createdAt).toLocaleDateString('tr-TR') %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sağ: QR Kod -->
+          <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+              <div class="card-header fw-bold small">
+                <i class="bi bi-qr-code me-1"></i>QR / NFC
+              </div>
+              <div class="card-body">
+                <img src="<%= qr.qrDataUrl %>" alt="QR Kod" class="img-fluid mb-2" style="max-width:160px">
+                <div class="small text-muted mb-2"><code><%= qr.url %></code></div>
+                <a href="<%= qr.qrDataUrl %>" download="qr-<%= k.kullaniciAdi %>.png" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-download me-1"></i>İndir
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sag-panel') %>
+      </div>
+
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
