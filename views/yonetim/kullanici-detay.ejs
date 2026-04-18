@@ -94,6 +94,35 @@
             </div>
           </div>
 
+          <!-- Kart Bilgileri -->
+          <div class="card shadow-sm mt-3 text-center">
+            <div class="card-header fw-bold small">
+              <i class="bi bi-credit-card me-1"></i>Kimlik Kartı
+            </div>
+            <div class="card-body small">
+              <% if (k.kartSeriNo) { %>
+                <div class="mb-1"><strong>Seri No:</strong> <%= k.kartSeriNo %></div>
+                <div class="mb-2"><strong>Veriliş:</strong> <%= new Date(k.kartVerilisTarihi).toLocaleDateString('tr-TR') %></div>
+                <a href="/rapor/kimlik-karti/<%= k.kullaniciAdi %>" target="_blank" class="btn btn-sm btn-primary w-100 mb-1">
+                  <i class="bi bi-printer me-1"></i>Kartı Yazdır
+                </a>
+                <form method="POST" action="/yonetim/kullanicilar/<%= k.kullaniciAdi %>/kart-bas"
+                  onsubmit="return confirm('Yeni kart basılacak, seri no değişecek. Emin misiniz?')">
+                  <button type="submit" class="btn btn-sm btn-outline-warning w-100">
+                    <i class="bi bi-arrow-repeat me-1"></i>Yeniden Bas
+                  </button>
+                </form>
+              <% } else { %>
+                <p class="text-muted small">Henüz kart basılmamış.</p>
+                <form method="POST" action="/yonetim/kullanicilar/<%= k.kullaniciAdi %>/kart-bas">
+                  <button type="submit" class="btn btn-sm btn-success w-100">
+                    <i class="bi bi-credit-card me-1"></i>Kimlik Kartı Bas
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+
         </div>
 
       </div>

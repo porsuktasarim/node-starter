@@ -12,6 +12,18 @@ const settingsSchema = new mongoose.Schema({
   logo: {
     type: String,
     default: 'https://www.tarimorman.gov.tr/IcerikResimleri/BakanlikLogolariPng/LogoKirmizi_Tarim.png'
+  },
+  telefon: {
+    type: String,
+    default: ''
+  },
+  fontAdi: {
+    type: String,
+    default: 'MYRIADPRO-REGULAR.OTF'
+  },
+  fontKalin: {
+    type: String,
+    default: 'MYRIADPRO-BOLD.OTF'
   }
 }, { timestamps: true });
 

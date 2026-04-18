@@ -72,6 +72,42 @@
                 </div>
               </div>
 
+              <hr class="my-4">
+              <h6 class="fw-bold mb-3"><i class="bi bi-fonts me-2"></i>Font Ayarları</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Normal Font</label>
+                  <select name="fontAdi" class="form-select">
+                    <option value="MYRIADPRO-REGULAR.OTF" <%= ayarlar.fontAdi === 'MYRIADPRO-REGULAR.OTF' ? 'selected' : '' %>>Myriad Pro Regular</option>
+                    <option value="MYRIADPRO-COND.OTF" <%= ayarlar.fontAdi === 'MYRIADPRO-COND.OTF' ? 'selected' : '' %>>Myriad Pro Condensed</option>
+                    <option value="MYRIADPRO-CONDIT.OTF" <%= ayarlar.fontAdi === 'MYRIADPRO-CONDIT.OTF' ? 'selected' : '' %>>Myriad Pro Condensed Italic</option>
+                    <option value="MyriadPro-Light.otf" <%= ayarlar.fontAdi === 'MyriadPro-Light.otf' ? 'selected' : '' %>>Myriad Pro Light</option>
+                    <option value="MYRIADPRO-SEMIBOLDIT.OTF" <%= ayarlar.fontAdi === 'MYRIADPRO-SEMIBOLDIT.OTF' ? 'selected' : '' %>>Myriad Pro Semibold Italic</option>
+                    <option value="MinionPro-Regular.otf" <%= ayarlar.fontAdi === 'MinionPro-Regular.otf' ? 'selected' : '' %>>Minion Pro Regular</option>
+                    <option value="MinionPro-Medium.otf" <%= ayarlar.fontAdi === 'MinionPro-Medium.otf' ? 'selected' : '' %>>Minion Pro Medium</option>
+                    <option value="MinionPro-MediumIt.otf" <%= ayarlar.fontAdi === 'MinionPro-MediumIt.otf' ? 'selected' : '' %>>Minion Pro Medium Italic</option>
+                    <option value="MinionPro-It.otf" <%= ayarlar.fontAdi === 'MinionPro-It.otf' ? 'selected' : '' %>>Minion Pro Italic</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Kalın Font</label>
+                  <select name="fontKalin" class="form-select">
+                    <option value="MYRIADPRO-BOLD.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-BOLD.OTF' ? 'selected' : '' %>>Myriad Pro Bold</option>
+                    <option value="MYRIADPRO-BOLDCOND.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-BOLDCOND.OTF' ? 'selected' : '' %>>Myriad Pro Bold Condensed</option>
+                    <option value="MYRIADPRO-BOLDCONDIT.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-BOLDCONDIT.OTF' ? 'selected' : '' %>>Myriad Pro Bold Condensed Italic</option>
+                    <option value="MYRIADPRO-BOLDIT.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-BOLDIT.OTF' ? 'selected' : '' %>>Myriad Pro Bold Italic</option>
+                    <option value="MYRIADPRO-SEMIBOLD.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-SEMIBOLD.OTF' ? 'selected' : '' %>>Myriad Pro Semibold</option>
+                    <option value="MYRIADPRO-SEMIBOLDIT.OTF" <%= ayarlar.fontKalin === 'MYRIADPRO-SEMIBOLDIT.OTF' ? 'selected' : '' %>>Myriad Pro Semibold Italic</option>
+                    <option value="MinionPro-Bold.otf" <%= ayarlar.fontKalin === 'MinionPro-Bold.otf' ? 'selected' : '' %>>Minion Pro Bold</option>
+                    <option value="MinionPro-BoldIt.otf" <%= ayarlar.fontKalin === 'MinionPro-BoldIt.otf' ? 'selected' : '' %>>Minion Pro Bold Italic</option>
+                    <option value="MinionPro-BoldCn.otf" <%= ayarlar.fontKalin === 'MinionPro-BoldCn.otf' ? 'selected' : '' %>>Minion Pro Bold Condensed</option>
+                    <option value="MinionPro-BoldCnIt.otf" <%= ayarlar.fontKalin === 'MinionPro-BoldCnIt.otf' ? 'selected' : '' %>>Minion Pro Bold Condensed Italic</option>
+                    <option value="MinionPro-Semibold.otf" <%= ayarlar.fontKalin === 'MinionPro-Semibold.otf' ? 'selected' : '' %>>Minion Pro Semibold</option>
+                    <option value="MinionPro-SemiboldIt.otf" <%= ayarlar.fontKalin === 'MinionPro-SemiboldIt.otf' ? 'selected' : '' %>>Minion Pro Semibold Italic</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="mt-4">
                 <button type="submit" class="btn btn-primary">
                   <i class="bi bi-save me-1"></i>Kaydet

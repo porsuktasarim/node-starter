@@ -62,6 +62,22 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  tcKimlikNo: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  kartSeriNo: {
+    type: String,
+    trim: true,
+    unique: true,
+    sparse: true,
+    default: null
+  },
+  kartVerilisTarihi: {
+    type: Date,
+    default: null
+  },
   aktif: {
     type: Boolean,
     default: true

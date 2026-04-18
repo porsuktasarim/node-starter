@@ -6,6 +6,7 @@ const Organization = require('../models/Organization');
 const Settings = require('../models/Settings');
 const { girisGerekli, izinGerekli } = require('../middleware/auth');
 const { qrOlustur } = require('./qr');
+const { kartSeriNoOlustur } = require('../utils/rapor');
 const { logoUpload } = require('../middleware/upload');
 
 // Kullanıcı listesi
@@ -32,8 +33,15 @@ router.get('/kullanicilar', girisGerekli, izinGerekli('yonetim.kullanicilar.goru
 // Kullanıcı ekle
 router.post('/kullanicilar/ekle', girisGerekli, izinGerekli('yonetim.kullanicilar.ekle'), async (req, res) => {
   try {
-    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, organizasyon } = req.body;
-    const yeniKullanici = new User({ ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, organizasyon: organizasyon || null });
+    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, organizasyon, tcKimlikNo, kartSeriNo, kartVerilisTarihi } = req.body;
+    const otomatikSeriNo = kartSeriNo || await kartSeriNoOlustur(organizasyon);
+    const yeniKullanici = new User({ 
+      ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, sifre, rol, grup, 
+      organizasyon: organizasyon || null,
+      tcKimlikNo: tcKimlikNo || '',
+      kartSeriNo: otomatikSeriNo,
+      kartVerilisTarihi: kartVerilisTarihi || null
+    });
     await yeniKullanici.save();
     res.redirect('/yonetim/kullanicilar?basari=1');
   } catch (err) {
@@ -45,11 +53,14 @@ router.post('/kullanicilar/ekle', girisGerekli, izinGerekli('yonetim.kullanicila
 // Kullanıcı güncelle
 router.post('/kullanicilar/guncelle/:id', girisGerekli, izinGerekli('yonetim.kullanicilar.guncelle'), async (req, res) => {
   try {
-    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup, organizasyon, aktif } = req.body;
+    const { ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup, organizasyon, aktif, tcKimlikNo, kartSeriNo, kartVerilisTarihi } = req.body;
     await User.findByIdAndUpdate(req.params.id, {
       ad, soyad, kullaniciAdi, sicilNo, unvan, gorevYeri, email, rol, grup,
       organizasyon: organizasyon || null,
-      aktif: aktif === 'on'
+      aktif: aktif === 'on',
+      tcKimlikNo: tcKimlikNo || '',
+      kartSeriNo: kartSeriNo || undefined,
+      kartVerilisTarihi: kartVerilisTarihi || null
     });
     res.redirect('/yonetim/kullanicilar?basari=1');
   } catch (err) {
@@ -296,11 +307,13 @@ router.get('/ayarlar', girisGerekli, izinGerekli('yonetim.ayarlar.goruntule'), a
 // Ayarlar güncelle
 router.post('/ayarlar', girisGerekli, izinGerekli('yonetim.ayarlar.guncelle'), logoUpload.single('logo'), async (req, res) => {
   try {
-    const { sistemAdi, kurumAdi } = req.body;
     let ayarlar = await Settings.findOne();
     if (!ayarlar) ayarlar = new Settings();
+    const { sistemAdi, kurumAdi, fontAdi, fontKalin } = req.body;
     ayarlar.sistemAdi = sistemAdi;
     ayarlar.kurumAdi = kurumAdi;
+    ayarlar.fontAdi = fontAdi || 'MYRIADPRO-REGULAR.OTF';
+    ayarlar.fontKalin = fontKalin || 'MYRIADPRO-BOLD.OTF';
 
     if (req.file) {
       ayarlar.logo = `/uploads/logo/${req.file.filename}`;
@@ -317,6 +330,25 @@ router.post('/ayarlar', girisGerekli, izinGerekli('yonetim.ayarlar.guncelle'), l
   } catch (err) {
     console.error(err);
     res.redirect('/yonetim/ayarlar');
+  }
+});
+
+// Kimlik kartı bas
+router.post('/kullanicilar/:kullaniciAdi/kart-bas', girisGerekli, izinGerekli('yonetim.kullanicilar.guncelle'), async (req, res) => {
+  try {
+    const k = await User.findOne({ kullaniciAdi: req.params.kullaniciAdi });
+    if (!k) return res.redirect('/yonetim/kullanicilar');
+
+    const seriNo = await kartSeriNoOlustur(k.organizasyon);
+    await User.findByIdAndUpdate(k._id, {
+      kartSeriNo: seriNo,
+      kartVerilisTarihi: new Date()
+    });
+
+    res.redirect(`/yonetim/kullanicilar/${req.params.kullaniciAdi}?basari=kart`);
+  } catch (err) {
+    console.error(err);
+    res.redirect(`/yonetim/kullanicilar/${req.params.kullaniciAdi}?hata=1`);
   }
 });
 

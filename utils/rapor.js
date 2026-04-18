@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const Organization = require('../models/Organization');
 
 // Organizasyon hiyerarşisinden dosya adı öneki oluştur
@@ -25,6 +26,37 @@ module.exports.dosyaOnekiOlustur = dosyaOnekiOlustur;
 
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
+
+// Kart seri no oluştur
+const kartSeriNoOlustur = async (organizasyonId) => {
+  // Organizasyon hiyerarşisinden il kodunu bul
+  let ilKodu = '00';
+  if (organizasyonId) {
+    const onek = await dosyaOnekiOlustur(organizasyonId);
+    // İlk 2 rakamı al (il kodu)
+    const rakamlar = onek.replace(/[^0-9]/g, '');
+    if (rakamlar.length >= 2) {
+      ilKodu = rakamlar.substring(0, 2);
+    }
+  }
+
+  // Bu il koduna ait son kart seri nosunu bul
+  const sonKart = await User.findOne(
+    { kartSeriNo: new RegExp(`^${ilKodu}`) },
+    { kartSeriNo: 1 },
+    { sort: { kartSeriNo: -1 } }
+  );
+
+  let siradaki = 1;
+  if (sonKart && sonKart.kartSeriNo) {
+    const mevcutSira = parseInt(sonKart.kartSeriNo.substring(2));
+    siradaki = mevcutSira + 1;
+  }
+
+  return `${ilKodu}${String(siradaki).padStart(5, '0')}`;
+};
+
+module.exports.kartSeriNoOlustur = kartSeriNoOlustur;
 
 // PDF oluştur
 const pdfOlustur = (res, baslik, kolonlar, satirlar) => {
@@ -115,4 +147,4 @@ const excelOlustur = async (res, baslik, kolonlar, satirlar) => {
   res.end();
 };
 
-module.exports = { pdfOlustur, excelOlustur, dosyaOnekiOlustur };
+module.exports = { pdfOlustur, excelOlustur, dosyaOnekiOlustur, kartSeriNoOlustur };
