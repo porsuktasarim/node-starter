@@ -191,4 +191,26 @@ router.post('/organizasyon/sil/:id', girisGerekli, izinGerekli('yonetim.organiza
   }
 });
 
+// Organizasyon detay sayfası
+router.get('/organizasyon/:id', girisGerekli, izinGerekli('yonetim.organizasyon.goruntule'), async (req, res) => {
+  try {
+    const birim = await Organization.findById(req.params.id).populate('ust');
+    if (!birim) return res.redirect('/yonetim/organizasyon');
+
+    const altBirimler = await Organization.find({ ust: req.params.id });
+    const kullanicilar = await User.find({ organizasyon: req.params.id }).populate('grup');
+
+    res.render('yonetim/organizasyon-detay', {
+      title: birim.ad,
+      kullanici: req.session.kullanici,
+      birim,
+      altBirimler,
+      kullanicilar
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/organizasyon');
+  }
+});
+
 module.exports = router;

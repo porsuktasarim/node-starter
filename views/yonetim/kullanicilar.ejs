@@ -49,6 +49,7 @@
                     <th>Sicil No</th>
                     <th>Ünvan</th>
                     <th>Görev Yeri</th>
+                    <th>Organizasyon</th>
                     <th>Grup</th>
                     <th>Rol</th>
                     <th>Durum</th>
@@ -63,6 +64,7 @@
                     <td><%= k.sicilNo %></td>
                     <td><%= k.unvan || '—' %></td>
                     <td><%= k.gorevYeri || '—' %></td>
+                    <td><%= k.organizasyon ? k.organizasyon.ad : '—' %></td>
                     <td><%= k.grup ? k.grup.ad : '—' %></td>
                     <td>
                       <span class="badge <%= k.rol === 'admin' ? 'bg-danger' : 'bg-secondary' %>">

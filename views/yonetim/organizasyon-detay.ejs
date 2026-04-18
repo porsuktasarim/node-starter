@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/navbar') %>
+
+  <div class="container-fluid flex-grow-1 py-3">
+    <div class="row g-3">
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sol-panel') %>
+      </div>
+
+      <div class="col-lg-8 col-md-6">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/yonetim/organizasyon">Organizasyon</a></li>
+            <% if (birim.ust) { %>
+              <li class="breadcrumb-item"><a href="/yonetim/organizasyon/<%= birim.ust._id %>"><%= birim.ust.ad %></a></li>
+            <% } %>
+            <li class="breadcrumb-item active"><%= birim.ad %></li>
+          </ol>
+        </nav>
+
+        <!-- Birim Bilgileri -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold">
+              <i class="bi bi-building me-2"></i><%= birim.ad %>
+              <% if (birim.tur) { %>
+                <span class="badge bg-light text-dark border ms-2"><%= birim.tur %></span>
+              <% } %>
+            </span>
+            <span class="badge <%= birim.aktif ? 'bg-success' : 'bg-warning text-dark' %>">
+              <%= birim.aktif ? 'Aktif' : 'Pasif' %>
+            </span>
+          </div>
+          <div class="card-body small">
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Üst Birim:</strong> <%= birim.ust ? birim.ust.ad : '— (Kök Birim)' %>
+              </div>
+              <div class="col-md-6">
+                <strong>Alt Birim Sayısı:</strong> <%= altBirimler.length %>
+              </div>
+              <div class="col-md-6 mt-2">
+                <strong>Kullanıcı Sayısı:</strong> <%= kullanicilar.length %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alt Birimler -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-header fw-bold">
+            <i class="bi bi-diagram-3 me-2"></i>Alt Birimler
+          </div>
+          <div class="card-body p-0">
+            <% if (altBirimler.length === 0) { %>
+              <p class="text-muted text-center py-3 mb-0">Alt birim yok.</p>
+            <% } else { %>
+              <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Ad</th>
+                    <th>Tür</th>
+                    <th>Durum</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% altBirimler.forEach(ab => { %>
+                  <tr>
+                    <td><%= ab.ad %></td>
+                    <td><%= ab.tur || '—' %></td>
+                    <td>
+                      <span class="badge <%= ab.aktif ? 'bg-success' : 'bg-warning text-dark' %>">
+                        <%= ab.aktif ? 'Aktif' : 'Pasif' %>
+                      </span>
+                    </td>
+                    <td>
+                      <a href="/yonetim/organizasyon/<%= ab._id %>" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Kullanıcılar -->
+        <div class="card shadow-sm">
+          <div class="card-header fw-bold">
+            <i class="bi bi-people me-2"></i>Bu Birime Bağlı Kullanıcılar
+          </div>
+          <div class="card-body p-0">
+            <% if (kullanicilar.length === 0) { %>
+              <p class="text-muted text-center py-3 mb-0">Bu birime bağlı kullanıcı yok.</p>
+            <% } else { %>
+              <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Ad Soyad</th>
+                    <th>Kullanıcı Adı</th>
+                    <th>Ünvan</th>
+                    <th>Grup</th>
+                    <th>Durum</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% kullanicilar.forEach(k => { %>
+                  <tr>
+                    <td><%= k.ad %> <%= k.soyad %></td>
+                    <td><%= k.kullaniciAdi %></td>
+                    <td><%= k.unvan || '—' %></td>
+                    <td><%= k.grup ? k.grup.ad : '—' %></td>
+                    <td>
+                      <span class="badge <%= k.aktif ? 'bg-success' : 'bg-warning text-dark' %>">
+                        <%= k.aktif ? 'Aktif' : 'Pasif' %>
+                      </span>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <%- include('../partials/sag-panel') %>
+      </div>
+
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

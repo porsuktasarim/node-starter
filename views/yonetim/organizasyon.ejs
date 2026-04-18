@@ -25,7 +25,7 @@
                   : '<i class="bi bi-dash text-muted"></i>'}
               </span>
               <i class="bi bi-building me-2 text-primary"></i>
-              <span class="me-2">${o.ad}</span>
+              <a href="/yonetim/organizasyon/${o._id}" class="me-2 text-decoration-none">${o.ad}</a>
               ${o.tur ? `<span class="badge bg-light text-dark border me-2 small">${o.tur}</span>` : ''}
               <span class="badge ${o.aktif ? 'bg-success' : 'bg-warning text-dark'} me-auto small">
                 ${o.aktif ? 'Aktif' : 'Pasif'}
