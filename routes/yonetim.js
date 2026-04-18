@@ -70,12 +70,18 @@ router.post('/kullanicilar/sil/:id', girisGerekli, izinGerekli('yonetim.kullanic
 router.get('/gruplar', girisGerekli, izinGerekli('yonetim.gruplar.goruntule'), async (req, res) => {
   try {
     const gruplar = await Group.find().sort({ kod: 1 });
+    const kullaniciSayilari = await User.aggregate([
+      { $group: { _id: '$grup', sayi: { $sum: 1 } } }
+    ]);
+    const sayiMap = {};
+    kullaniciSayilari.forEach(k => { if (k._id) sayiMap[k._id.toString()] = k.sayi; });
     const MODULLER = require('../config/moduller');
     res.render('yonetim/gruplar', {
       title: 'Gruplar',
       kullanici: req.session.kullanici,
       gruplar,
       MODULLER,
+      sayiMap,
       hata: null,
       basari: null
     });
@@ -210,6 +216,28 @@ router.get('/organizasyon/:id', girisGerekli, izinGerekli('yonetim.organizasyon.
   } catch (err) {
     console.error(err);
     res.redirect('/yonetim/organizasyon');
+  }
+});
+
+// Grup detay sayfası
+router.get('/gruplar/:id', girisGerekli, izinGerekli('yonetim.gruplar.goruntule'), async (req, res) => {
+  try {
+    const grup = await Group.findById(req.params.id);
+    if (!grup) return res.redirect('/yonetim/gruplar');
+
+    const kullanicilar = await User.find({ grup: req.params.id }).populate('organizasyon');
+    const MODULLER = require('../config/moduller');
+
+    res.render('yonetim/grup-detay', {
+      title: grup.ad,
+      kullanici: req.session.kullanici,
+      grup,
+      kullanicilar,
+      MODULLER
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/gruplar');
   }
 });
 

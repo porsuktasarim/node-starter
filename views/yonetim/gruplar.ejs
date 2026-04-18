@@ -44,6 +44,7 @@
                   <th>Kod</th>
                   <th>Ad</th>
                   <th>İzin Sayısı</th>
+                  <th>Kullanıcılar</th>
                   <th>İşlem</th>
                 </tr>
               </thead>
@@ -53,6 +54,11 @@
                   <td><code><%= g.kod %></code></td>
                   <td><%= g.ad %></td>
                   <td><span class="badge bg-primary"><%= g.izinler.length %></span></td>
+                  <td>
+                    <a href="/yonetim/gruplar/<%= g._id %>" class="badge bg-success text-decoration-none">
+                      <%= sayiMap[g._id.toString()] || 0 %> kullanıcı
+                    </a>
+                  </td>
                   <td>
                     <button class="btn btn-sm btn-outline-primary"
                       data-bs-toggle="modal"
