@@ -5,6 +5,7 @@ const { MongoStore } = require('connect-mongo');
 const path = require('path');
 
 const authRoutes = require('./routes/auth');
+const { ayarlariYukle } = require('./middleware/auth');
 const yonetimRoutes = require('./routes/yonetim');
 const { router: qrRoutes } = require('./routes/qr');
 const raporRoutes = require('./routes/rapor');
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(ayarlariYukle);
 
 // MongoDB bağlantısı
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27018/node-starter';

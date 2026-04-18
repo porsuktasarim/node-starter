@@ -3,8 +3,10 @@ const router = express.Router();
 const User = require('../models/User');
 const Group = require('../models/Group');
 const Organization = require('../models/Organization');
+const Settings = require('../models/Settings');
 const { girisGerekli, izinGerekli } = require('../middleware/auth');
 const { qrOlustur } = require('./qr');
+const { logoUpload } = require('../middleware/upload');
 
 // Kullanıcı listesi
 router.get('/kullanicilar', girisGerekli, izinGerekli('yonetim.kullanicilar.goruntule'), async (req, res) => {
@@ -270,6 +272,51 @@ router.get('/kullanicilar/:kullaniciAdi', girisGerekli, izinGerekli('yonetim.kul
   } catch (err) {
     console.error(err);
     res.redirect('/yonetim/kullanicilar');
+  }
+});
+
+// Ayarlar sayfası
+router.get('/ayarlar', girisGerekli, izinGerekli('yonetim.ayarlar.goruntule'), async (req, res) => {
+  try {
+    let ayarlar = await Settings.findOne();
+    if (!ayarlar) ayarlar = await Settings.create({});
+    res.render('yonetim/ayarlar', {
+      title: 'Ayarlar',
+      kullanici: req.session.kullanici,
+      ayarlar,
+      hata: null,
+      basari: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
+// Ayarlar güncelle
+router.post('/ayarlar', girisGerekli, izinGerekli('yonetim.ayarlar.guncelle'), logoUpload.single('logo'), async (req, res) => {
+  try {
+    const { sistemAdi, kurumAdi } = req.body;
+    let ayarlar = await Settings.findOne();
+    if (!ayarlar) ayarlar = new Settings();
+    ayarlar.sistemAdi = sistemAdi;
+    ayarlar.kurumAdi = kurumAdi;
+
+    if (req.file) {
+      ayarlar.logo = `/uploads/logo/${req.file.filename}`;
+    }
+
+    await ayarlar.save();
+    res.render('yonetim/ayarlar', {
+      title: 'Ayarlar',
+      kullanici: req.session.kullanici,
+      ayarlar,
+      hata: null,
+      basari: 'Ayarlar kaydedildi.'
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/yonetim/ayarlar');
   }
 });
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { fotografUpload } = require('../middleware/upload');
 
 // Giriş sayfası
 router.get('/giris', (req, res) => {
@@ -59,7 +60,7 @@ router.get('/profil', (req, res) => {
 });
 
 // Profil güncelle
-router.post('/profil', async (req, res) => {
+router.post('/profil', fotografUpload.single('fotograf'), async (req, res) => {
   try {
     const { ad, soyad, email, mevcutSifre, yeniSifre } = req.body;
     const kullanici = await User.findById(req.session.kullanici.id);
@@ -78,6 +79,9 @@ router.post('/profil', async (req, res) => {
         });
       }
       kullanici.sifre = yeniSifre;
+      if (req.file) {
+      kullanici.fotograf = `/uploads/fotograf/${req.file.filename}`;
+    }
     }
 
     kullanici.ad = ad;

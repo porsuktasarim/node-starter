@@ -1,3 +1,4 @@
+const Settings = require('../models/Settings');
 const Group = require('../models/Group');
 
 // Giriş kontrolü
@@ -38,4 +39,16 @@ const izinGerekli = (izinKodu) => {
   };
 };
 
-module.exports = { girisGerekli, izinGerekli };
+// Ayarları her sayfaya geç
+const ayarlariYukle = async (req, res, next) => {
+  try {
+    let ayarlar = await Settings.findOne();
+    if (!ayarlar) ayarlar = { sistemAdi: 'AKEKOS', kurumAdi: '', logo: '' };
+    res.locals.ayarlar = ayarlar;
+  } catch (err) {
+    res.locals.ayarlar = { sistemAdi: 'AKEKOS', kurumAdi: '', logo: '' };
+  }
+  next();
+};
+
+module.exports = { girisGerekli, izinGerekli, ayarlariYukle };
