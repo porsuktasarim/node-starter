@@ -6,6 +6,16 @@ const organizationSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  kisaKod: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    default: ''
+  },
+  dosyaAdindaKullan: {
+    type: Boolean,
+    default: false
+  },
   ust: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Organization',

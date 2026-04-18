@@ -36,6 +36,8 @@
                 data-id="${o._id}"
                 data-ad="${o.ad}"
                 data-tur="${o.tur || ''}"
+                data-kisakod="${o.kisaKod || ''}"
+                data-dosyaadindakullan="${o.dosyaAdindaKullan || false}"
                 data-ust="${o.ust ? o.ust._id || o.ust : ''}"
                 data-aktif="${o.aktif}">
                 <i class="bi bi-pencil"></i>
@@ -59,6 +61,8 @@
         const btn = e.relatedTarget;
         document.getElementById('g_ad').value = btn.dataset.ad;
         document.getElementById('g_tur').value = btn.dataset.tur;
+        document.getElementById('g_kisaKod').value = btn.dataset.kisakod || '';
+        document.getElementById('g_dosyaAdindaKullan').checked = btn.dataset.dosyaadindakullan === 'true';
         document.getElementById('g_ust').value = btn.dataset.ust;
         document.getElementById('g_aktif').checked = btn.dataset.aktif === 'true';
         document.getElementById('guncelleForm').action = '/yonetim/organizasyon/guncelle/' + btn.dataset.id;
@@ -132,6 +136,17 @@
               <input type="text" name="tur" class="form-control" placeholder="örn: İl Müdürlüğü, OBM">
             </div>
             <div class="mb-3">
+              <label class="form-label">Kısa Kod</label>
+              <input type="text" name="kisaKod" class="form-control" placeholder="örn: 34, istar, orkut">
+              <div class="form-text">Dosya adlandırmasında kullanılacak kısa kod.</div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input type="checkbox" name="dosyaAdindaKullan" id="dosyaAdindaKullan_ekle" class="form-check-input">
+                <label class="form-check-label" for="dosyaAdindaKullan_ekle">Dosya adlandırmasında kullan</label>
+              </div>
+            </div>
+            <div class="mb-3">
               <label class="form-label">Üst Birim</label>
               <select name="ust" class="form-select">
                 <option value="">— Yok (Kök Birim) —</option>
@@ -167,6 +182,16 @@
             <div class="mb-3">
               <label class="form-label">Tür</label>
               <input type="text" name="tur" id="g_tur" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Kısa Kod</label>
+              <input type="text" name="kisaKod" id="g_kisaKod" class="form-control">
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input type="checkbox" name="dosyaAdindaKullan" id="g_dosyaAdindaKullan" class="form-check-input">
+                <label class="form-check-label" for="g_dosyaAdindaKullan">Dosya adlandırmasında kullan</label>
+              </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Üst Birim</label>

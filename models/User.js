@@ -58,6 +58,10 @@ const userSchema = new mongoose.Schema({
     ref: 'Organization',
     default: null
   },
+  fotograf: {
+    type: String,
+    default: null
+  },
   aktif: {
     type: Boolean,
     default: true

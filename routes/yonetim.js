@@ -161,8 +161,13 @@ router.get('/organizasyon', girisGerekli, izinGerekli('yonetim.organizasyon.goru
 // Organizasyon ekle
 router.post('/organizasyon/ekle', girisGerekli, izinGerekli('yonetim.organizasyon.guncelle'), async (req, res) => {
   try {
-    const { ad, tur, ust } = req.body;
-    const yeni = new Organization({ ad, tur, ust: ust || null });
+    const { ad, tur, ust, kisaKod, dosyaAdindaKullan } = req.body;
+    const yeni = new Organization({ 
+      ad, tur, 
+      ust: ust || null,
+      kisaKod: kisaKod || '',
+      dosyaAdindaKullan: dosyaAdindaKullan === 'on'
+    });
     await yeni.save();
     res.redirect('/yonetim/organizasyon?basari=1');
   } catch (err) {
@@ -174,10 +179,12 @@ router.post('/organizasyon/ekle', girisGerekli, izinGerekli('yonetim.organizasyo
 // Organizasyon güncelle
 router.post('/organizasyon/guncelle/:id', girisGerekli, izinGerekli('yonetim.organizasyon.guncelle'), async (req, res) => {
   try {
-    const { ad, tur, ust, aktif } = req.body;
+    const { ad, tur, ust, kisaKod, dosyaAdindaKullan, aktif } = req.body;
     await Organization.findByIdAndUpdate(req.params.id, {
       ad, tur,
       ust: ust || null,
+      kisaKod: kisaKod || '',
+      dosyaAdindaKullan: dosyaAdindaKullan === 'on',
       aktif: aktif === 'on'
     });
     res.redirect('/yonetim/organizasyon?basari=1');
