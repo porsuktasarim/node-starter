@@ -43,14 +43,29 @@
           </div>
           <div class="card-body small">
             <div class="row">
-              <div class="col-md-6">
-                <strong>Üst Birim:</strong> <%= birim.ust ? birim.ust.ad : '— (Kök Birim)' %>
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <strong>Üst Birim:</strong> <%= birim.ust ? birim.ust.ad : '— (Kök Birim)' %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Alt Birim Sayısı:</strong> <%= altBirimler.length %>
+                  </div>
+                  <div class="col-md-6 mt-2">
+                    <strong>Kullanıcı Sayısı:</strong> <%= kullanicilar.length %>
+                  </div>
+                  <div class="col-md-12 mt-2">
+                    <strong>QR/NFC URL:</strong>
+                    <code><%= qr.url %></code>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-6">
-                <strong>Alt Birim Sayısı:</strong> <%= altBirimler.length %>
-              </div>
-              <div class="col-md-6 mt-2">
-                <strong>Kullanıcı Sayısı:</strong> <%= kullanicilar.length %>
+              <div class="col-md-4 text-center">
+                <img src="<%= qr.qrDataUrl %>" alt="QR Kod" class="img-fluid" style="max-width:150px">
+                <br>
+                <a href="<%= qr.qrDataUrl %>" download="qr-<%= birim.ad %>.png" class="btn btn-sm btn-outline-secondary mt-1">
+                  <i class="bi bi-download me-1"></i>İndir
+                </a>
               </div>
             </div>
           </div>

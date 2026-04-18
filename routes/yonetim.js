@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Group = require('../models/Group');
 const Organization = require('../models/Organization');
 const { girisGerekli, izinGerekli } = require('../middleware/auth');
+const { qrOlustur } = require('./qr');
 
 // Kullanıcı listesi
 router.get('/kullanicilar', girisGerekli, izinGerekli('yonetim.kullanicilar.goruntule'), async (req, res) => {
@@ -205,13 +206,16 @@ router.get('/organizasyon/:id', girisGerekli, izinGerekli('yonetim.organizasyon.
 
     const altBirimler = await Organization.find({ ust: req.params.id });
     const kullanicilar = await User.find({ organizasyon: req.params.id }).populate('grup');
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const qr = await qrOlustur('organizasyon', req.params.id, baseUrl);
 
     res.render('yonetim/organizasyon-detay', {
       title: birim.ad,
       kullanici: req.session.kullanici,
       birim,
       altBirimler,
-      kullanicilar
+      kullanicilar,
+      qr
     });
   } catch (err) {
     console.error(err);

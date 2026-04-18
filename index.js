@@ -6,6 +6,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const yonetimRoutes = require('./routes/yonetim');
+const { router: qrRoutes } = require('./routes/qr');
 
 const app = express();
 const PORT = process.env.PORT || 55154;
@@ -39,6 +40,7 @@ app.use(session({
 // Rotalar
 app.use('/', authRoutes);
 app.use('/yonetim', yonetimRoutes);
+app.use('/', qrRoutes);
 
 // Ana sayfa
 app.get('/', (req, res) => {
