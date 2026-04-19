@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @page { size: auto; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face {
+      font-family: 'KartFont';
+      src: url('file:///app/public/fonts/<%= ayarlar.fontAdi || "MYRIADPRO-REGULAR.OTF" %>');
+      font-weight: normal;
+    }
+    @font-face {
+      font-family: 'KartFont';
+      src: url('file:///app/public/fonts/<%= ayarlar.fontKalin || "MYRIADPRO-BOLD.OTF" %>');
+      font-weight: bold;
+    }
+    body { 
+      background: #fff; 
+      font-family: 'KartFont', Arial, sans-serif;
+    }
+    .card-container {
+      width: 5.5cm;
+      height: 8.5cm;
+      background: #fff;
+      overflow: hidden;
+      font-size: 6pt;
+      color: #75787B;
+      line-height: 1.25;
+      display: flex;
+      flex-direction: column;
+      page-break-after: always;
+    }
+    .card-header-bar {
+      background: #e41e26;
+      color: #fff;
+      font-size: 4pt;
+      font-weight: 700;
+      letter-spacing: 0.3pt;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 4px;
+    }
+    .label-text {
+      font-size: 4.5pt;
+      font-weight: 700;
+      color: #75787B;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    .value-text {
+      font-size: 6pt;
+      color: #333;
+      font-weight: 400;
+    }
+    .value-text-bold {
+      font-size: 6pt;
+      color: #333;
+      font-weight: 700;
+    }
+    .value-sub {
+      font-size: 5pt;
+      color: #999;
+      font-style: italic;
+      line-height: 1.2;
+    }
+    .photo-box {
+      width: 2.5cm;
+      height: 3cm;
+      background: #e0e0e0;
+      border: 1px solid #bbb;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-box {
+      width: 2.5cm;
+      height: 2.5cm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .disclaimer-text {
+      font-size: 4pt;
+      color: #75787B;
+      line-height: 1.3;
+    }
+    .info-block {
+      padding: 0 4px 2px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex-grow: 1;
+    }
+    .border-top {
+      border-top: 0.5pt solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÖN YÜZ -->
+  <div class="card-container">
+    <div class="card-header-bar">
+      <img src="<%= bayrakUrl %>" style="height:20px; width:20px; object-fit:contain;">
+      <div style="text-align:center; line-height:1.4; padding: 0 3px;">
+        <div>T.C.</div>
+        <div><%= ayarlar.kurumAdi || 'TARIM VE ORMAN BAKANLIĞI' %></div>
+        <div>ARAMA KURTARMA PERSONELİ KİMLİK KARTI</div>
+      </div>
+      <img src="<%= logoUrl %>" style="height:20px; width:20px; object-fit:contain;">
+    </div>
+
+    <!-- Fotoğraf -->
+    <div style="display:flex; justify-content:center; padding: 4px 0 2px 0;">
+      <% if (kullanici.fotograf) { %>
+        <img src="<%= fotografUrl %>" class="photo-box" style="border-radius:2px;">
+      <% } else { %>
+        <div class="photo-box" style="border-radius:2px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#aaa"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Bilgiler -->
+    <div class="info-block">
+      <div>
+        <div class="label-text">ADI / NAME</div>
+        <div class="value-text"><%= kullanici.ad %></div>
+      </div>
+      <div>
+        <div class="label-text">SOYADI / SURNAME</div>
+        <div class="value-text"><%= kullanici.soyad %></div>
+      </div>
+      <div>
+        <div class="label-text">ÜNVANI / TITLE</div>
+        <div class="value-text"><%= kullanici.unvan || '—' %></div>
+      </div>
+      <div>
+        <div class="label-text">KURUM SİCİL NO / ID NUMBER</div>
+        <div class="value-text"><%= kullanici.sicilNo %></div>
+      </div>
+      <div>
+        <div class="label-text">GÖREVLİ OLDUĞU BİRİM / UNIT OF ASSIGNMENT</div>
+        <% if (kullanici.organizasyon) { %>
+          <div class="value-text-bold"><%= kullanici.organizasyon.ad %></div>
+          <% if (kullanici.organizasyon.ust) { %>
+            <div class="value-sub"><%= kullanici.organizasyon.ust.ad %></div>
+          <% } %>
+        <% } else { %>
+          <div class="value-text">—</div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARKA YÜZ -->
+  <div class="card-container">
+    <div class="card-header-bar" style="justify-content:center;">
+      <span><%= ayarlar.kurumAdi || 'TARIM VE ORMAN BAKANLIĞI' %></span>
+    </div>
+
+    <!-- QR Kod -->
+    <div style="display:flex; justify-content:center; padding: 4px 0 2px 0;">
+      <div class="qr-box">
+        <img src="<%= qrDataUrl %>" style="width:2.5cm; height:2.5cm;">
+      </div>
+    </div>
+
+    <!-- İçerik -->
+    <div class="info-block">
+      <div>
+        <div class="label-text">T.C. KİMLİK NO / TC IDENTIFICATION NUMBER</div>
+        <div class="value-text"><%= kullanici.tcKimlikNo || '—' %></div>
+      </div>
+      <div>
+        <div class="label-text">VERİLİŞ TARİHİ / DATE OF ISSUE</div>
+        <div class="value-text"><%= kullanici.kartVerilisTarihi ? new Date(kullanici.kartVerilisTarihi).toLocaleDateString('tr-TR') : '—' %></div>
+      </div>
+      <div>
+        <div class="label-text">KART SERİ NO / CARD SERIAL NO</div>
+        <div class="value-text"><%= kullanici.kartSeriNo || '—' %></div>
+      </div>
+
+      <div class="mt-auto border-top" style="padding-top:3px; margin-top:auto;">
+        <div class="disclaimer-text">
+          Bu kartın tüm hakları <%= ayarlar.kurumAdi || 'TARIM VE ORMAN BAKANLIĞI' %>'na aittir. 
+          Personelin kurumdan ve/veya ekipten ayrılması durumunda kartın iadesi zorunludur. 
+          Kartın kaybolması ya da bulunması halinde <%= ayarlar.telefon || '___' %> nolu telefona bildiriniz.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
