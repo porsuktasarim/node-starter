@@ -146,12 +146,11 @@ router.get('/kimlik-karti/:kullaniciAdi', girisGerekli, async (req, res) => {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    await page.setViewport({ width: 208, height: 642, deviceScaleFactor: 3.7795 });
+    await page.setViewport({ width: 208, height: 322, deviceScaleFactor: 1 });
     const pdf = await page.pdf({
-      width: '5.5cm',
-      height: '17cm',
+      width: '208px',
+      height: '322px',
       printBackground: true,
-      pageRanges: '1-2',
       margin: { top: '0', bottom: '0', left: '0', right: '0' }
     });
 
